@@ -42,17 +42,17 @@ class Engine(object):
         else:
             return score
 
-        res = []
+        scores = []
         for cell in empty_cells:
             b = list(board)
             b[cell] = player
 
-            res.append(self.minimax(b, self.opponent(player)))
+            scores.append(self.minimax(b, self.opponent(player)))
 
         if player == self.player:
-            return max(res)
+            return max(scores)
         else:
-            return min(res)
+            return min(scores)
 
     def empty_cells(self, board):
         return [i for i, c in enumerate(board)
@@ -105,7 +105,6 @@ class Engine(object):
         opp_win = self.has_won(board, opp)
         opp_has_two_in_line = self.has_two_in_line(board, opp)
 
-        # Heuristic
         score = 0
         if win:
             score += 100
