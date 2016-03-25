@@ -112,18 +112,3 @@ class Engine(object):
 
         return score
 
-
-def display(board):
-    rows = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
-    width = 3
-    for i, row in enumerate(rows):
-        s = ''
-        for idx, col in enumerate(row):
-            value = board[col] if board[col] != '' else ' '
-            s += value.center(width)
-            if idx != len(row) - 1:
-                s += '|'
-
-        print s
-        if i != len(rows) - 1:
-            print '-' * (width * 3 + 2)
