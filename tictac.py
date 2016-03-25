@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+from ai_engine import Player, AIEngine
 import cmd
 
 
@@ -45,7 +45,7 @@ class GameConsole(cmd.Cmd):
         """
         self.board[int(line)] = Player.X
 
-        engine = Engine(self.board)
+        engine = AIEngine(self.board)
         if engine.has_won(self.board, Player.X):
             display(self.board)
             print "You win!"
@@ -80,5 +80,4 @@ class GameConsole(cmd.Cmd):
 
 
 if __name__ == '__main__':
-    # display(board=["", "", "", "", "", "", "", "", ""])
     GameConsole().cmdloop("Minimalistic Tic Tac Toe")

@@ -6,29 +6,38 @@ class Player:
     O = 'O'
 
 
-class Engine(object):
+class AIEngine(object):
 
     def __init__(self, board, player=Player.O):
         self.board, self.player = board, player
 
-    def best_move(self):
-        return max(self.gen_move(), key=itemgetter(1))[0]
+    def has_won(self, board, player):
+        rows = [board[0:3], board[3:6], board[6:9]]
+        cols = zip(board[0:3], board[3:6], board[6:9])
+        diagonals = [board[0:9:4], board[2:7:2]]
 
-    def gen_move(self):
+        row_win = any(all(a == player for a in c) for c in rows)
+        col_win = any(all(a == player for a in c) for c in cols)
+        diag_win = any(all(a == player for a in c) for c in diagonals)
+
+        return row_win or col_win or diag_win
+
+    def best_move(self):
         moves = []
-        for cell in self.empty_cells(self.board):
+        for cell in self.__empty_cells(self.board):
             b = list(self.board)
             b[cell] = self.player
 
             moves.append(
-                (cell, self.minimax(b, self.opponent(self.player)))
+                (cell, self.__minimax(b, self.__opponent(self.player)))
             )
 
-        return moves
+        # Return cell representing best move
+        return max(moves, key=itemgetter(1))[0]
 
-    def minimax(self, board, player):
-        empty_cells = self.empty_cells(board)
-        score = self.get_score(board)
+    def __minimax(self, board, player):
+        empty_cells = self.__empty_cells(board)
+        score = self.__get_score(board)
 
         if score == 0:
             # Check for draw
@@ -42,35 +51,24 @@ class Engine(object):
             b = list(board)
             b[cell] = player
 
-            scores.append(self.minimax(b, self.opponent(player)))
+            scores.append(self.__minimax(b, self.__opponent(player)))
 
         if player == self.player:
             return max(scores)
         else:
             return min(scores)
 
-    def empty_cells(self, board):
+    def __empty_cells(self, board):
         return [i for i, c in enumerate(board)
                 if c not in [Player.X, Player.O]]
 
-    def opponent(self, player):
+    def __opponent(self, player):
         if player == Player.X:
             return Player.O
         else:
             return Player.X
 
-    def has_won(self, board, player):
-        rows = [board[0:3], board[3:6], board[6:9]]
-        cols = zip(board[0:3], board[3:6], board[6:9])
-        diagonals = [board[0:9:4], board[2:7:2]]
-
-        row_win = any(all(a == player for a in c) for c in rows)
-        col_win = any(all(a == player for a in c) for c in cols)
-        diag_win = any(all(a == player for a in c) for c in diagonals)
-
-        return row_win or col_win or diag_win
-
-    def has_two_in_line(self, board, player):
+    def __has_two_in_line(self, board, player):
         rows = [board[0:3], board[3:6], board[6:9]]
         cols = zip(board[0:3], board[3:6], board[6:9])
         diagonals = [board[0:9:4], board[2:7:2]]
@@ -87,18 +85,12 @@ class Engine(object):
 
         return False
 
-    def game_over(self, board):
-        all_filled = all(c != '' for c in board)
-        return self.has_won(board, Player.X) or \
-            self.has_won(board, Player.O) or \
-            all_filled
-
-    def get_score(self, board):
-        opp = self.opponent(self.player)
+    def __get_score(self, board):
+        opp = self.__opponent(self.player)
         win = self.has_won(board, self.player)
-        has_two_in_line = self.has_two_in_line(board, self.player)
+        has_two_in_line = self.__has_two_in_line(board, self.player)
         opp_win = self.has_won(board, opp)
-        opp_has_two_in_line = self.has_two_in_line(board, opp)
+        opp_has_two_in_line = self.__has_two_in_line(board, opp)
 
         score = 0
         if win:
@@ -111,4 +103,3 @@ class Engine(object):
             score -= 10
 
         return score
-
